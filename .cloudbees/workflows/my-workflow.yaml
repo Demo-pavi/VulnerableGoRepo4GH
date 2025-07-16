@@ -16,7 +16,7 @@ jobs:
       - name: Get source code
         uses: cloudbees-io/checkout@v1
       - name: Scan with Gosec
-        uses: cloudbees-io/gosec-plugin@v1  
+        uses: cloudbees-io/gosec-plugin@v2  
       - id: build-container
         name: Build container image
         uses: docker://gcr.io/kaniko-project/executor:debug
