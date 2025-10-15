@@ -1,38 +1,13 @@
 apiVersion: automation.cloudbees.io/v1alpha1
 kind: workflow
-name: My workflow
+name: prod
 on:
-  push:
-    branches:
-      - "**"
   workflow_dispatch:
-permissions:
-  scm-token-own: read
-  scm-token-org: read
-  id-token: write
 jobs:
-  build:
+  deploy:
     steps:
-      - name: Get source code
-        uses: cloudbees-io/checkout@v1
-      - name: Scan with Gosec
-        uses: cloudbees-io/gosec-plugin@v2
-      - id: build-container
-        name: Build container image
-        uses: docker://gcr.io/kaniko-project/executor:debug
-        run: |
-          /kaniko/executor --context $CLOUDBEES_WORKSPACE --build-arg USER=cbp,TOKEN=${{ secrets.GH_SECURITY_PAT }} --dockerfile $CLOUDBEES_WORKSPACE/Dockerfile --tar-path $CLOUDBEES_WORKSPACE/container-image.tar --no-push
-      - id: register-artifact
-        name: Register the artifact
-        uses: cloudbees-io/register-build-artifact@v1
+      - uses: cloudbees-io/register-deployed-artifact@v2
         with:
-          name: PN-artifact1
-          version: PN-23.6.6
-          url: 020229604682.dkr.ecr.us-east-1.amazonaws.com/throwaway/actions/vulnerable-image:PN-23.6.6
-      - id: upload-binary
-        name: Upload binary using action
-        uses: cloudbees-io/asset-chain-utils-preprod/upload-binary@v1
-        with:
-          file-path: container-image.tar
-          file-type: BINARY_CONTAINER
-          debug: "true"
+          labels: nodejs
+          artifact-id: 9867ec51-0ed5-42f2-bbfe-759cf7af1b63
+          target-environment: QA
